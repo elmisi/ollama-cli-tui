@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from ollama_tui.app import OllamaTUI
+from ollama_tui.widgets import PSView
 
 
 SCREENSHOTS_DIR = Path(__file__).parent.parent / "screenshots"
@@ -43,6 +44,15 @@ async def take_screenshots():
         # Switch to Running tab
         await pilot.press("2")
         await asyncio.sleep(0.5)
+
+        # Inject demo data for Running tab (real data may be empty)
+        ps_view = app.query_one(PSView)
+        ps_table = ps_view.query_one("#ps-table")
+        ps_table.clear()
+        ps_table.add_row("llama3.2:latest", "a1b2c3d4e5f6", "2.0 GB", "100% GPU", "4096", "4 minutes from now")
+        ps_table.add_row("qwen2.5:7b", "845dbda0ea48", "4.7 GB", "100% GPU", "8192", "3 minutes from now")
+        ps_view.query_one("#ps-status").update("2 running")
+        await asyncio.sleep(0.2)
 
         # Screenshot 2: Running tab
         app.save_screenshot(str(SCREENSHOTS_DIR / "02_running.svg"))
