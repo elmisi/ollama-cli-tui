@@ -26,24 +26,24 @@ from ollama_tui.ollama_client import RemoteModel
 
 SCREENSHOTS_DIR = Path(__file__).parent.parent / "screenshots"
 
-# Demo data for search results with parameters and pull counts
+# Demo data for search results with parameters, pull counts, and descriptions
 DEMO_REMOTE_MODELS = [
-    RemoteModel("codellama", "7b, 13b, 34b, 70b", "5.2M"),
-    RemoteModel("deepseek-coder", "1.3b, 6.7b, 33b", "8.1M"),
-    RemoteModel("deepseek-r1", "1.5b, 7b, 8b, 14b, 32b, 70b, 671b", "42.3M"),
-    RemoteModel("gemma", "2b, 7b", "6.8M"),
-    RemoteModel("gemma2", "2b, 9b, 27b", "12.4M"),
-    RemoteModel("llama2", "7b, 13b, 70b", "18.9M"),
-    RemoteModel("llama3", "8b, 70b", "24.1M"),
-    RemoteModel("llama3.1", "8b, 70b, 405b", "31.5M"),
-    RemoteModel("llama3.2", "1b, 3b", "45.2M"),
-    RemoteModel("llama3.3", "70b", "8.7M"),
-    RemoteModel("mistral", "7b", "15.3M"),
-    RemoteModel("mixtral", "8x7b, 8x22b", "9.6M"),
-    RemoteModel("phi3", "3.8b, 14b", "7.2M"),
-    RemoteModel("qwen", "0.5b, 1.8b, 4b, 7b, 14b, 72b", "4.1M"),
-    RemoteModel("qwen2", "0.5b, 1.5b, 7b, 72b", "11.8M"),
-    RemoteModel("qwen2.5", "0.5b, 1.5b, 3b, 7b, 14b, 32b, 72b", "22.6M"),
+    RemoteModel("codellama", "7b, 13b, 34b, 70b", "5.2M", "Code-specialized Llama model for programming tasks"),
+    RemoteModel("deepseek-coder", "1.3b, 6.7b, 33b", "8.1M", "Code generation model trained on 2T tokens"),
+    RemoteModel("deepseek-r1", "1.5b, 7b, 8b, 14b, 32b, 70b, 671b", "42.3M", "DeepSeek's reasoning model with reinforcement learning"),
+    RemoteModel("gemma", "2b, 7b", "6.8M", "Lightweight open models from Google DeepMind"),
+    RemoteModel("gemma2", "2b, 9b, 27b", "12.4M", "Google's next generation Gemma models"),
+    RemoteModel("llama2", "7b, 13b, 70b", "18.9M", "Meta's open foundation and chat models"),
+    RemoteModel("llama3", "8b, 70b", "24.1M", "Meta's most capable openly available LLM"),
+    RemoteModel("llama3.1", "8b, 70b, 405b", "31.5M", "Llama 3.1 with extended context and capabilities"),
+    RemoteModel("llama3.2", "1b, 3b", "45.2M", "Lightweight Llama models for edge devices"),
+    RemoteModel("llama3.3", "70b", "8.7M", "Latest Llama 3.3 with improved reasoning"),
+    RemoteModel("mistral", "7b", "15.3M", "Fast and efficient 7B model from Mistral AI"),
+    RemoteModel("mixtral", "8x7b, 8x22b", "9.6M", "Mixture of Experts model from Mistral AI"),
+    RemoteModel("phi3", "3.8b, 14b", "7.2M", "Microsoft's compact yet capable language models"),
+    RemoteModel("qwen", "0.5b, 1.8b, 4b, 7b, 14b, 72b", "4.1M", "Alibaba's multilingual foundation models"),
+    RemoteModel("qwen2", "0.5b, 1.5b, 7b, 72b", "11.8M", "Second generation Qwen with improved performance"),
+    RemoteModel("qwen2.5", "0.5b, 1.5b, 3b, 7b, 14b, 32b, 72b", "22.6M", "Latest Qwen with enhanced capabilities"),
 ]
 
 

@@ -1,6 +1,7 @@
 """Async wrapper for Ollama CLI commands."""
 
 import asyncio
+import html
 import json
 import logging
 import re
@@ -18,6 +19,7 @@ class RemoteModel:
     name: str
     sizes: str  # Parameter sizes like "7b, 13b, 70b"
     pulls: str  # Download count like "109.5M"
+    description: str  # Short description of the model
 
 
 @dataclass
@@ -148,11 +150,11 @@ class OllamaClient:
                 with urllib.request.urlopen(req, timeout=15) as resp:
                     return resp.read().decode()
 
-            html = await loop.run_in_executor(None, fetch)
+            page_content = await loop.run_in_executor(None, fetch)
 
             # Split by model links and parse each block
             models = []
-            model_blocks = re.split(r'<a href="/library/', html)[1:]
+            model_blocks = re.split(r'<a href="/library/', page_content)[1:]
 
             for block in model_blocks:
                 # Extract name
@@ -171,7 +173,11 @@ class OllamaClient:
                 pulls_match = re.search(r'x-test-pull-count[^>]*>([^<]+)</span>', block)
                 pulls = pulls_match.group(1).strip() if pulls_match else "-"
 
-                models.append(RemoteModel(name=name, sizes=sizes_str, pulls=pulls))
+                # Extract description (decode HTML entities)
+                desc_match = re.search(r'text-neutral-800 text-md">([^<]+)</p>', block)
+                description = html.unescape(desc_match.group(1).strip()) if desc_match else ""
+
+                models.append(RemoteModel(name=name, sizes=sizes_str, pulls=pulls, description=description))
 
             logger.info(f"Fetched {len(models)} remote models from library")
             return models
