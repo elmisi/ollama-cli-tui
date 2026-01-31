@@ -10,7 +10,7 @@ from textual import work
 from textual.message import Message
 
 from ..ollama_client import OllamaClient, RemoteModel
-from ..screens import ConfirmDialog, PullProgressScreen
+from ..screens import ConfirmDialog, PullProgressScreen, TagSelectionScreen
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class SearchView(Vertical):
 
     def on_mount(self) -> None:
         table = self.query_one("#search-table", DataTable)
-        table.add_columns("Name", "Parameters", "Pulls", "Description")
+        table.add_columns("Name", "Parameters", "Description")
         table.cursor_type = "row"
         self.load_models()
 
@@ -70,7 +70,7 @@ class SearchView(Vertical):
             if filter_lower in model.name.lower():
                 # Truncate description to fit
                 desc = model.description[:60] + "..." if len(model.description) > 60 else model.description
-                table.add_row(model.name, model.sizes, model.pulls, desc)
+                table.add_row(model.name, model.sizes, desc)
                 count += 1
 
         # Move cursor to first row after loading
@@ -101,15 +101,39 @@ class SearchView(Vertical):
         if table.cursor_row is not None and table.row_count > 0:
             row = table.get_row_at(table.cursor_row)
             model_name = str(row[0])
+            self._fetch_and_show_tags(model_name)
+
+    @work(exclusive=True, group="fetch_tags")
+    async def _fetch_and_show_tags(self, model_name: str) -> None:
+        """Fetch tags for a model and show selection screen."""
+        status = self.query_one("#search-status", Static)
+        status.update(f"Loading versions for {model_name}...")
+
+        client = OllamaClient()
+        tags = await client.fetch_model_tags(model_name)
+
+        if not tags:
+            status.update(f"No versions found for {model_name}")
+            return
+
+        status.update(f"{len(tags)} versions available")
+        self.app.push_screen(
+            TagSelectionScreen(model_name, tags),
+            self._on_tag_selected,
+        )
+
+    def _on_tag_selected(self, tag: str | None) -> None:
+        """Handle tag selection."""
+        if tag:
             self.app.push_screen(
-                ConfirmDialog(f"Pull model '{model_name}'?"),
-                lambda confirmed: self._start_pull(model_name) if confirmed else None,
+                ConfirmDialog(f"Pull '{tag}'?"),
+                lambda confirmed: self._start_pull(tag) if confirmed else None,
             )
 
-    def _start_pull(self, model_name: str) -> None:
+    def _start_pull(self, tag: str) -> None:
         """Start pull with progress screen."""
         self.app.push_screen(
-            PullProgressScreen(model_name),
+            PullProgressScreen(tag),
             lambda success: self._on_pull_done(success),
         )
 

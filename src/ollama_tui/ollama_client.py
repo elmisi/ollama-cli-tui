@@ -18,8 +18,15 @@ class RemoteModel:
 
     name: str
     sizes: str  # Parameter sizes like "7b, 13b, 70b"
-    pulls: str  # Download count like "109.5M"
     description: str  # Short description of the model
+
+
+@dataclass
+class ModelTag:
+    """Represents a specific tag/version of a model."""
+
+    tag: str  # Full tag like "llama3.1:8b"
+    size: str  # Download size like "4.9GB"
 
 
 @dataclass
@@ -169,20 +176,54 @@ class OllamaClient:
                 sizes = re.findall(r'x-test-size[^>]*>([^<]+)</span>', block)
                 sizes_str = ", ".join(sizes) if sizes else "-"
 
-                # Extract pull count
-                pulls_match = re.search(r'x-test-pull-count[^>]*>([^<]+)</span>', block)
-                pulls = pulls_match.group(1).strip() if pulls_match else "-"
-
                 # Extract description (decode HTML entities)
                 desc_match = re.search(r'text-neutral-800 text-md">([^<]+)</p>', block)
                 description = html.unescape(desc_match.group(1).strip()) if desc_match else ""
 
-                models.append(RemoteModel(name=name, sizes=sizes_str, pulls=pulls, description=description))
+                models.append(RemoteModel(name=name, sizes=sizes_str, description=description))
 
             logger.info(f"Fetched {len(models)} remote models from library")
             return models
         except Exception as e:
             logger.error(f"Failed to fetch remote models: {e}")
+            return []
+
+    async def fetch_model_tags(self, model_name: str) -> list[ModelTag]:
+        """Fetch available tags/versions for a model with their sizes."""
+        loop = asyncio.get_event_loop()
+        try:
+            def fetch():
+                req = urllib.request.Request(
+                    f"https://ollama.com/library/{model_name}/tags",
+                    headers={"User-Agent": "ollama-tui/0.1"},
+                )
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    return resp.read().decode()
+
+            page_content = await loop.run_in_executor(None, fetch)
+
+            tags = []
+            # Find all tag entries: input with value and following size
+            # Pattern: <input class="command hidden" value="model:tag" /> ... <p class="col-span-2 text-neutral-500 text-[13px]">SIZE</p>
+            blocks = re.split(r'<input class="command hidden" value="', page_content)[1:]
+
+            for block in blocks:
+                # Extract tag name
+                tag_match = re.match(r'([^"]+)"', block)
+                if not tag_match:
+                    continue
+                tag = tag_match.group(1)
+
+                # Extract size
+                size_match = re.search(r'col-span-2 text-neutral-500 text-\[13px\]">([^<]+)</p>', block)
+                size = size_match.group(1).strip() if size_match else "-"
+
+                tags.append(ModelTag(tag=tag, size=size))
+
+            logger.info(f"Fetched {len(tags)} tags for {model_name}")
+            return tags
+        except Exception as e:
+            logger.error(f"Failed to fetch tags for {model_name}: {e}")
             return []
 
     def _format_size(self, size_bytes: int) -> str:
