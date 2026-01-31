@@ -5,11 +5,18 @@ import html
 import json
 import logging
 import re
+import shutil
+import time
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Cache configuration
+CACHE_DIR = Path.home() / ".cache" / "ollama-tui"
+CACHE_TTL = 24 * 60 * 60  # 24 hours in seconds
 
 
 @dataclass
@@ -49,6 +56,36 @@ class RunningModel:
     processor: str
     context: str
     until: str
+
+
+def flush_cache() -> None:
+    """Delete all cached data."""
+    if CACHE_DIR.exists():
+        shutil.rmtree(CACHE_DIR)
+        logger.info(f"Cache flushed: {CACHE_DIR}")
+
+
+def _get_cache(cache_file: Path) -> dict | None:
+    """Get cached data if valid (within TTL)."""
+    if not cache_file.exists():
+        return None
+    try:
+        data = json.loads(cache_file.read_text())
+        if time.time() - data.get("timestamp", 0) < CACHE_TTL:
+            logger.info(f"Cache hit: {cache_file.name}")
+            return data
+        logger.info(f"Cache expired: {cache_file.name}")
+    except (json.JSONDecodeError, KeyError):
+        logger.warning(f"Invalid cache file: {cache_file}")
+    return None
+
+
+def _set_cache(cache_file: Path, data: dict) -> None:
+    """Save data to cache with timestamp."""
+    cache_file.parent.mkdir(parents=True, exist_ok=True)
+    data["timestamp"] = time.time()
+    cache_file.write_text(json.dumps(data))
+    logger.info(f"Cache saved: {cache_file.name}")
 
 
 class OllamaClient:
@@ -169,7 +206,15 @@ class OllamaClient:
         return f"Error: {stderr.decode()}"
 
     async def search_models(self) -> list[RemoteModel]:
-        """Fetch available models from Ollama library via scraping."""
+        """Fetch available models from Ollama library via scraping (cached 24h)."""
+        cache_file = CACHE_DIR / "models.json"
+
+        # Check cache first
+        cached = _get_cache(cache_file)
+        if cached and "models" in cached:
+            return [RemoteModel(**m) for m in cached["models"]]
+
+        # Fetch from network
         loop = asyncio.get_event_loop()
         try:
             def fetch():
@@ -206,13 +251,25 @@ class OllamaClient:
                 models.append(RemoteModel(name=name, sizes=sizes_str, description=description))
 
             logger.info(f"Fetched {len(models)} remote models from library")
+
+            # Save to cache
+            _set_cache(cache_file, {"models": [asdict(m) for m in models]})
+
             return models
         except Exception as e:
             logger.error(f"Failed to fetch remote models: {e}")
             return []
 
     async def fetch_model_tags(self, model_name: str) -> list[ModelTag]:
-        """Fetch available tags/versions for a model with their sizes."""
+        """Fetch available tags/versions for a model with their sizes (cached 24h)."""
+        cache_file = CACHE_DIR / "tags" / f"{model_name}.json"
+
+        # Check cache first
+        cached = _get_cache(cache_file)
+        if cached and "tags" in cached:
+            return [ModelTag(**t) for t in cached["tags"]]
+
+        # Fetch from network
         loop = asyncio.get_event_loop()
         try:
             def fetch():
@@ -244,6 +301,10 @@ class OllamaClient:
                 tags.append(ModelTag(tag=tag, size=size))
 
             logger.info(f"Fetched {len(tags)} tags for {model_name}")
+
+            # Save to cache
+            _set_cache(cache_file, {"tags": [asdict(t) for t in tags]})
+
             return tags
         except Exception as e:
             logger.error(f"Failed to fetch tags for {model_name}: {e}")

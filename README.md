@@ -87,6 +87,16 @@ source venv/bin/activate
 PYTHONPATH=src python -m ollama_tui
 ```
 
+### Command Line Options
+
+| Option | Description |
+|--------|-------------|
+| `--flush-cache` | Clear cached registry data (24h TTL) |
+| `--version` | Show version number |
+| `--help` | Show help message |
+
+Registry data (model list and tags) is cached in `~/.cache/ollama-tui/` for 24 hours to reduce network requests.
+
 ## Keybindings
 
 ### Global

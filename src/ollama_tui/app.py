@@ -1,5 +1,6 @@
 """Main Ollama TUI application."""
 
+import argparse
 import logging
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from textual.binding import Binding
 from textual.widgets import Footer, Header, TabbedContent, TabPane, DataTable, Input
 
 from . import __version__
-from .ollama_client import OllamaClient
+from .ollama_client import OllamaClient, flush_cache
 from .widgets import ModelsView, PSView, SearchView
 
 # Setup file logging
@@ -111,6 +112,25 @@ class OllamaTUI(App):
 
 def main():
     """Run the Ollama TUI application."""
+    parser = argparse.ArgumentParser(
+        description="Terminal UI for managing Ollama models"
+    )
+    parser.add_argument(
+        "--flush-cache",
+        action="store_true",
+        help="Clear cached model data (24h TTL cache for registry data)"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"ollama-tui {__version__}"
+    )
+    args = parser.parse_args()
+
+    if args.flush_cache:
+        flush_cache()
+        print("Cache cleared.")
+
     app = OllamaTUI()
     app.run()
 
