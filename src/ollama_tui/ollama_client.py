@@ -16,8 +16,8 @@ class RemoteModel:
     """Represents a model available on Ollama registry."""
 
     name: str
-    size: str
-    modified: str
+    sizes: str  # Parameter sizes like "7b, 13b, 70b"
+    pulls: str  # Download count like "109.5M"
 
 
 @dataclass
@@ -150,15 +150,28 @@ class OllamaClient:
 
             html = await loop.run_in_executor(None, fetch)
 
-            # Extract model names from href="/library/modelname"
-            pattern = re.compile(r'href="/library/([^"]+)"')
-            model_names = sorted(set(pattern.findall(html)))
+            # Split by model links and parse each block
+            models = []
+            model_blocks = re.split(r'<a href="/library/', html)[1:]
 
-            models = [
-                RemoteModel(name=name, size="", modified="")
-                for name in model_names
-                if name and not name.startswith("?")  # Filter out query params
-            ]
+            for block in model_blocks:
+                # Extract name
+                name_match = re.match(r'([^"]+)', block)
+                if not name_match:
+                    continue
+                name = name_match.group(1)
+                if not name or name.startswith("?"):
+                    continue
+
+                # Extract sizes (parameter counts like 7b, 70b)
+                sizes = re.findall(r'x-test-size[^>]*>([^<]+)</span>', block)
+                sizes_str = ", ".join(sizes) if sizes else "-"
+
+                # Extract pull count
+                pulls_match = re.search(r'x-test-pull-count[^>]*>([^<]+)</span>', block)
+                pulls = pulls_match.group(1).strip() if pulls_match else "-"
+
+                models.append(RemoteModel(name=name, sizes=sizes_str, pulls=pulls))
 
             logger.info(f"Fetched {len(models)} remote models from library")
             return models
