@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ollama-cli-tui"
+version = "0.1.0"
+description = "A TUI application for managing Ollama models"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "elmisi" }
+]
+keywords = ["ollama", "llm", "tui", "terminal", "ai", "models"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "textual>=0.50.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/elmisi/ollama-cli-tui"
+Repository = "https://github.com/elmisi/ollama-cli-tui"
+Issues = "https://github.com/elmisi/ollama-cli-tui/issues"
+
+[project.scripts]
+ollama-tui = "ollama_tui.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ollama_tui"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""

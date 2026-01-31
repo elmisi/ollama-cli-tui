@@ -42,27 +42,42 @@ Real-time filtering as you type.
 
 ## Installation
 
+### Quick Install (Recommended)
+
 ```bash
-# Clone the repository
 git clone https://github.com/elmisi/ollama-cli-tui.git
 cd ollama-cli-tui
+./install.sh
+```
 
-# Create virtual environment
+This creates a virtual environment and installs the `ollama-tui` command to `~/.local/bin/`.
+
+### Uninstall
+
+```bash
+./uninstall.sh
+```
+
+### Manual Installation
+
+```bash
+git clone https://github.com/elmisi/ollama-cli-tui.git
+cd ollama-cli-tui
 python -m venv venv
-source venv/bin/activate  # Linux/macOS
-# or: venv\Scripts\activate  # Windows
-
-# Install dependencies
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ## Usage
 
 ```bash
-# Using the run script
-./run.sh
+# If installed with install.sh
+ollama-tui
 
-# Or manually
+# Or run directly from repo
+./run.py
+
+# Or with manual venv
 source venv/bin/activate
 PYTHONPATH=src python -m ollama_tui
 ```
@@ -112,6 +127,7 @@ PYTHONPATH=src python -m ollama_tui
 ollama-cli-tui/
 ├── src/
 │   └── ollama_tui/
+│       ├── __init__.py         # Version info
 │       ├── app.py              # Main application
 │       ├── ollama_client.py    # Ollama CLI wrapper
 │       ├── screens/            # Modal screens
@@ -127,8 +143,11 @@ ollama-cli-tui/
 ├── scripts/
 │   └── take_screenshots.py     # Screenshot generator
 ├── screenshots/                # Documentation images
+├── install.sh                  # Installation script
+├── uninstall.sh                # Uninstallation script
+├── run.py                      # Entry point
+├── pyproject.toml              # Build configuration
 ├── requirements.txt
-├── run.sh
 └── README.md
 ```
 

@@ -7,6 +7,7 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Footer, Header, TabbedContent, TabPane, DataTable, Input
 
+from . import __version__
 from .ollama_client import OllamaClient
 from .widgets import ModelsView, PSView, SearchView
 
@@ -24,7 +25,7 @@ class OllamaTUI(App):
     """Main Ollama TUI Application."""
 
     CSS_PATH = Path(__file__).parent / "styles" / "app.tcss"
-    TITLE = "Ollama TUI"
+    TITLE = f"Ollama TUI v{__version__}"
 
     BINDINGS = [
         Binding("1", "tab_models", "Models", show=True),
