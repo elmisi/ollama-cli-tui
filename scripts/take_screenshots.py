@@ -108,8 +108,8 @@ async def take_screenshots():
         app.save_screenshot(str(SCREENSHOTS_DIR / "04_search_filter.svg"))
         print("✓ 04_search_filter.svg")
 
-        # Press Enter to show pull confirmation dialog
-        await pilot.press("enter")
+        # Press p to show pull confirmation dialog
+        await pilot.press("p")
         await asyncio.sleep(0.3)
 
         # Screenshot 5: Pull confirmation dialog

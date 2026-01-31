@@ -20,7 +20,7 @@ class SearchView(Vertical):
 
     BINDINGS = [
         Binding("r", "refresh", "Refresh", show=True),
-        Binding("enter", "pull_model", "Pull", show=True),
+        Binding("p", "pull_model", "Pull", show=True),
         Binding("/", "focus_search", "Search", show=True),
         Binding("escape", "focus_table", "Back to list", show=False),
     ]

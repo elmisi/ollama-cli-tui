@@ -122,7 +122,7 @@ PYTHONPATH=src python -m ollama_tui
 |-----|--------|
 | `↑` `↓` | Navigate list |
 | `/` | Focus search input |
-| `Enter` | Pull selected model |
+| `p` | Pull selected model |
 | `Escape` | Back to list |
 | `r` | Refresh from registry |
 
