@@ -48,6 +48,9 @@ class ModelsView(Vertical):
             table.add_row(model.name, model.id, model.size, model.modified)
 
         table.loading = False
+        # Move cursor to first row after loading
+        if table.row_count > 0:
+            table.move_cursor(row=0)
         self.query_one("#status-bar", Static).update(f"{len(models)} models")
 
     def action_refresh(self) -> None:

@@ -71,6 +71,10 @@ class SearchView(Vertical):
                 table.add_row(model.name, model.size, model.modified)
                 count += 1
 
+        # Move cursor to first row after loading
+        if table.row_count > 0:
+            table.move_cursor(row=0)
+
         status.update(f"{count} models" + (f" (filtered)" if filter_text else ""))
 
     def on_input_changed(self, event: Input.Changed) -> None:

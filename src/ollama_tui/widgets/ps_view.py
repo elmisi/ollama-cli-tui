@@ -61,6 +61,10 @@ class PSView(Vertical):
                 model.until,
             )
 
+        # Move cursor to first row after loading
+        if table.row_count > 0:
+            table.move_cursor(row=0)
+
         status = self.query_one("#ps-status", Static)
         if models:
             status.update(f"{len(models)} running")
