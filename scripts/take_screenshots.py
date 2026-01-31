@@ -111,13 +111,13 @@ async def take_screenshots():
         app.save_screenshot(str(SCREENSHOTS_DIR / "04_search_filter.svg"))
         print("✓ 04_search_filter.svg")
 
-        # Press p to show pull confirmation dialog
+        # Press p to show tag selection (needs time to fetch from network)
         await pilot.press("p")
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(3)  # Wait for network fetch
 
-        # Screenshot 5: Pull confirmation dialog
-        app.save_screenshot(str(SCREENSHOTS_DIR / "05_pull_confirm.svg"))
-        print("✓ 05_pull_confirm.svg")
+        # Screenshot 5: Tag selection dialog
+        app.save_screenshot(str(SCREENSHOTS_DIR / "05_tag_selection.svg"))
+        print("✓ 05_tag_selection.svg")
 
         print(f"\nScreenshots saved to: {SCREENSHOTS_DIR}")
 

@@ -96,11 +96,34 @@ class OllamaClient:
             "ollama",
             "pull",
             model_name,
+            stdin=asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
         )
-        async for line in proc.stdout:
-            yield line.decode().strip()
+        buffer = ""
+        while True:
+            chunk = await proc.stdout.read(256)
+            if not chunk:
+                break
+            buffer += chunk.decode()
+            # Split by carriage return or newline
+            while "\r" in buffer or "\n" in buffer:
+                # Find the earliest separator
+                r_pos = buffer.find("\r")
+                n_pos = buffer.find("\n")
+                if r_pos == -1:
+                    pos = n_pos
+                elif n_pos == -1:
+                    pos = r_pos
+                else:
+                    pos = min(r_pos, n_pos)
+                line = buffer[:pos].strip()
+                buffer = buffer[pos + 1:]
+                if line:
+                    yield line
+        # Yield any remaining content
+        if buffer.strip():
+            yield buffer.strip()
         await proc.wait()
 
     async def delete_model(self, model_name: str) -> tuple[bool, str]:

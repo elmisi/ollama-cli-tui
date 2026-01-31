@@ -27,10 +27,10 @@ Real-time filtering as you type.
 
 ![Search Filter](screenshots/04_search_filter.svg)
 
-### Pull Confirmation
-Confirm before downloading a model.
+### Version Selection
+Select which version to pull with download sizes.
 
-![Pull Confirm](screenshots/05_pull_confirm.svg)
+![Tag Selection](screenshots/05_tag_selection.svg)
 
 ## Features
 
