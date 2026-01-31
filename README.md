@@ -27,6 +27,11 @@ Real-time filtering as you type.
 
 ![Search Filter](screenshots/04_search_filter.svg)
 
+### Pull Confirmation
+Confirm before downloading a model.
+
+![Pull Confirm](screenshots/05_pull_confirm.svg)
+
 ## Features
 
 - **Models View** - List, delete, and inspect local models
