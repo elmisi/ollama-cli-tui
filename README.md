@@ -5,6 +5,28 @@ A terminal user interface for managing [Ollama](https://ollama.com) models. Buil
 ![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
+## Screenshots
+
+### Models Tab
+List, inspect, and delete local models.
+
+![Models Tab](screenshots/01_models.svg)
+
+### Running Tab
+Monitor running models with auto-refresh.
+
+![Running Tab](screenshots/02_running.svg)
+
+### Search Tab
+Search and pull models from the Ollama registry.
+
+![Search Tab](screenshots/03_search.svg)
+
+### Search with Filter
+Real-time filtering as you type.
+
+![Search Filter](screenshots/04_search_filter.svg)
+
 ## Features
 
 - **Models View** - List, delete, and inspect local models
@@ -102,10 +124,26 @@ ollama-cli-tui/
 │       │   └── search_view.py
 │       └── styles/
 │           └── app.tcss        # CSS styling
+├── scripts/
+│   └── take_screenshots.py     # Screenshot generator
+├── screenshots/                # Documentation images
 ├── requirements.txt
 ├── run.sh
 └── README.md
 ```
+
+## Development
+
+### Regenerating Screenshots
+
+After UI changes, regenerate the documentation screenshots:
+
+```bash
+source venv/bin/activate
+python scripts/take_screenshots.py
+```
+
+Screenshots are saved as SVG files in the `screenshots/` directory.
 
 ## License
 
