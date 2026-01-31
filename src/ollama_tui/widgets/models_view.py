@@ -23,6 +23,10 @@ class ModelsView(Vertical):
         Binding("enter", "show_info", "Info", show=True),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._first_load = True
+
     def compose(self) -> ComposeResult:
         yield DataTable(id="models-table")
         yield Static("", id="status-bar")
@@ -51,6 +55,10 @@ class ModelsView(Vertical):
         # Move cursor to first row after loading
         if table.row_count > 0:
             table.move_cursor(row=0)
+        # Focus table on first load
+        if self._first_load:
+            self._first_load = False
+            table.focus()
         self.query_one("#status-bar", Static).update(f"{len(models)} models")
 
     def action_refresh(self) -> None:

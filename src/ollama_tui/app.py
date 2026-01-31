@@ -63,8 +63,6 @@ class OllamaTUI(App):
                 severity="error",
                 timeout=10,
             )
-        # Focus on models table at startup
-        self.query_one("#models-table", DataTable).focus()
 
     def action_tab_models(self) -> None:
         """Switch to Models tab."""
