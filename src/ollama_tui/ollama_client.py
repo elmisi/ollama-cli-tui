@@ -137,37 +137,30 @@ class OllamaClient:
         return f"Error: {stderr.decode()}"
 
     async def search_models(self) -> list[RemoteModel]:
-        """Fetch available models from Ollama registry."""
+        """Fetch available models from Ollama library via scraping."""
         loop = asyncio.get_event_loop()
         try:
             def fetch():
                 req = urllib.request.Request(
-                    "https://ollama.com/api/tags",
+                    "https://ollama.com/library",
                     headers={"User-Agent": "ollama-tui/0.1"},
                 )
-                with urllib.request.urlopen(req, timeout=10) as resp:
-                    return json.loads(resp.read().decode())
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    return resp.read().decode()
 
-            data = await loop.run_in_executor(None, fetch)
-            models = []
-            for m in data.get("models", []):
-                size_bytes = m.get("size", 0)
-                size_str = self._format_size(size_bytes)
-                modified = m.get("modified_at", "")
-                if modified:
-                    try:
-                        dt = datetime.fromisoformat(modified.replace("Z", "+00:00"))
-                        modified = dt.strftime("%Y-%m-%d")
-                    except ValueError:
-                        pass
-                models.append(
-                    RemoteModel(
-                        name=m.get("name", ""),
-                        size=size_str,
-                        modified=modified,
-                    )
-                )
-            logger.info(f"Fetched {len(models)} remote models")
+            html = await loop.run_in_executor(None, fetch)
+
+            # Extract model names from href="/library/modelname"
+            pattern = re.compile(r'href="/library/([^"]+)"')
+            model_names = sorted(set(pattern.findall(html)))
+
+            models = [
+                RemoteModel(name=name, size="", modified="")
+                for name in model_names
+                if name and not name.startswith("?")  # Filter out query params
+            ]
+
+            logger.info(f"Fetched {len(models)} remote models from library")
             return models
         except Exception as e:
             logger.error(f"Failed to fetch remote models: {e}")

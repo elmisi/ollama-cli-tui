@@ -26,21 +26,24 @@ from ollama_tui.ollama_client import RemoteModel
 
 SCREENSHOTS_DIR = Path(__file__).parent.parent / "screenshots"
 
-# Demo data for search results
+# Demo data for search results (now just names from library scraping)
 DEMO_REMOTE_MODELS = [
-    RemoteModel("llama3.2:latest", "2.0 GB", "2025-01-15"),
-    RemoteModel("llama3.1:8b", "4.7 GB", "2025-01-10"),
-    RemoteModel("llama3.1:70b", "40 GB", "2025-01-10"),
-    RemoteModel("llama2:latest", "3.8 GB", "2024-12-01"),
-    RemoteModel("codellama:latest", "3.8 GB", "2024-11-15"),
-    RemoteModel("mistral:latest", "4.1 GB", "2025-01-12"),
-    RemoteModel("mixtral:8x7b", "26 GB", "2025-01-08"),
-    RemoteModel("qwen2.5:7b", "4.7 GB", "2025-01-20"),
-    RemoteModel("qwen2.5:14b", "9.0 GB", "2025-01-20"),
-    RemoteModel("gemma2:2b", "1.6 GB", "2025-01-18"),
-    RemoteModel("gemma2:9b", "5.4 GB", "2025-01-18"),
-    RemoteModel("phi3:latest", "2.2 GB", "2025-01-05"),
-    RemoteModel("deepseek-r1:latest", "4.7 GB", "2025-01-25"),
+    RemoteModel("codellama", "", ""),
+    RemoteModel("deepseek-coder", "", ""),
+    RemoteModel("deepseek-r1", "", ""),
+    RemoteModel("gemma", "", ""),
+    RemoteModel("gemma2", "", ""),
+    RemoteModel("llama2", "", ""),
+    RemoteModel("llama3", "", ""),
+    RemoteModel("llama3.1", "", ""),
+    RemoteModel("llama3.2", "", ""),
+    RemoteModel("llama3.3", "", ""),
+    RemoteModel("mistral", "", ""),
+    RemoteModel("mixtral", "", ""),
+    RemoteModel("phi3", "", ""),
+    RemoteModel("qwen", "", ""),
+    RemoteModel("qwen2", "", ""),
+    RemoteModel("qwen2.5", "", ""),
 ]
 
 
