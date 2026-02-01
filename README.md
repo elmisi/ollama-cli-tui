@@ -5,40 +5,67 @@ A terminal user interface for managing [Ollama](https://ollama.com) models. Buil
 ![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
+## Why This Tool?
+
+The Ollama CLI is powerful but lacks a way to **browse and discover models**. This TUI solves that by scraping the Ollama registry and providing:
+
+- **Full model catalog** - Browse 200+ models with descriptions and parameter sizes
+- **Smart search** - Real-time filtering to find the model you need
+- **Version selection** - See all available versions with download sizes before pulling
+- **One-key actions** - Pull, delete, stop models with single keypresses
+
+No more guessing model names or checking the website - everything is accessible from your terminal.
+
 ## Screenshots
 
-### Models Tab
-List, inspect, and delete local models.
-
-![Models Tab](screenshots/01_models.svg)
-
-### Running Tab
-Monitor running models with auto-refresh.
-
-![Running Tab](screenshots/02_running.svg)
-
-### Search Tab
-Search and pull models from the Ollama registry.
+### Search & Pull Models
+Browse the complete Ollama registry with real-time filtering. See model parameters and descriptions at a glance.
 
 ![Search Tab](screenshots/03_search.svg)
 
-### Search with Filter
-Real-time filtering as you type.
-
-![Search Filter](screenshots/04_search_filter.svg)
-
 ### Version Selection
-Select which version to pull with download sizes.
+When pulling a model, choose the specific version you need. See download sizes before committing.
 
 ![Tag Selection](screenshots/05_tag_selection.svg)
 
+### Filter Models
+Type to instantly filter the model list. Find what you need in seconds.
+
+![Search Filter](screenshots/04_search_filter.svg)
+
+### Manage Local Models
+List, inspect, and delete your downloaded models.
+
+![Models Tab](screenshots/01_models.svg)
+
+### Monitor Running Models
+See which models are loaded in memory with auto-refresh. Stop them when done.
+
+![Running Tab](screenshots/02_running.svg)
+
 ## Features
 
-- **Models View** - List, delete, and inspect local models
-- **Running View** - Monitor running models with auto-refresh, stop models
-- **Search View** - Search and pull models from the Ollama registry with real-time filtering
-- **Keyboard-first** - Full keyboard navigation with mouse support
-- **Progress tracking** - Visual progress bar during model downloads
+### Model Discovery (Search Tab)
+- Browse **200+ models** from the Ollama registry
+- See **parameter sizes** (7b, 13b, 70b, etc.) and descriptions
+- **Real-time filtering** - type to search instantly
+- **Version selection** - choose specific tags with download sizes
+- **Smart caching** - 24h cache reduces network requests
+
+### Local Model Management (Models Tab)
+- List all downloaded models with size and modification date
+- View detailed model information (architecture, parameters, license)
+- Delete models with confirmation
+
+### Process Monitoring (Running Tab)
+- Monitor loaded models with GPU/CPU usage
+- Auto-refresh every 5 seconds
+- Stop running models to free memory
+
+### User Experience
+- **Keyboard-first** - Full navigation without mouse
+- **Visual progress** - Progress bar during downloads
+- **Tab navigation** - Switch views with 1/2/3 or arrow keys
 
 ## Requirements
 
@@ -76,26 +103,21 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-# If installed with install.sh
-ollama-tui
+ollama-tui              # Run the TUI
+ollama-tui --flush-cache  # Clear cached registry data
+ollama-tui --version      # Show version
+```
 
-# Or run directly from repo
+If running from source:
+```bash
 ./run.py
-
-# Or with manual venv
-source venv/bin/activate
+# or
 PYTHONPATH=src python -m ollama_tui
 ```
 
-### Command Line Options
+### Caching
 
-| Option | Description |
-|--------|-------------|
-| `--flush-cache` | Clear cached registry data (24h TTL) |
-| `--version` | Show version number |
-| `--help` | Show help message |
-
-Registry data (model list and tags) is cached in `~/.cache/ollama-tui/` for 24 hours to reduce network requests.
+Registry data is cached in `~/.cache/ollama-tui/` for 24 hours to reduce network requests. Use `--flush-cache` to force a refresh.
 
 ## Keybindings
 
@@ -133,51 +155,43 @@ Registry data (model list and tags) is cached in `~/.cache/ollama-tui/` for 24 h
 | `↑` `↓` | Navigate list |
 | `/` | Focus search input |
 | `p` | Pull selected model |
-| `Escape` | Back to list |
+| `Enter` | Select version (in dialog) |
+| `Escape` | Back to list / Cancel |
 | `r` | Refresh from registry |
 
 ## Project Structure
 
 ```
 ollama-cli-tui/
-├── src/
-│   └── ollama_tui/
-│       ├── __init__.py         # Version info
-│       ├── app.py              # Main application
-│       ├── ollama_client.py    # Ollama CLI wrapper
-│       ├── screens/            # Modal screens
-│       │   ├── confirm_dialog.py
-│       │   ├── model_info.py
-│       │   └── pull_progress.py
-│       ├── widgets/            # View widgets
-│       │   ├── models_view.py
-│       │   ├── ps_view.py
-│       │   └── search_view.py
-│       └── styles/
-│           └── app.tcss        # CSS styling
-├── scripts/
-│   └── take_screenshots.py     # Screenshot generator
-├── screenshots/                # Documentation images
-├── install.sh                  # Installation script
-├── uninstall.sh                # Uninstallation script
-├── run.py                      # Entry point
-├── pyproject.toml              # Build configuration
-├── requirements.txt
-└── README.md
+├── src/ollama_tui/
+│   ├── app.py              # Main application
+│   ├── ollama_client.py    # Ollama CLI wrapper + registry scraping
+│   ├── screens/
+│   │   ├── confirm_dialog.py
+│   │   ├── model_info.py
+│   │   ├── pull_progress.py
+│   │   └── tag_selection.py  # Version selection dialog
+│   ├── widgets/
+│   │   ├── models_view.py
+│   │   ├── ps_view.py
+│   │   └── search_view.py
+│   └── styles/app.tcss
+├── scripts/take_screenshots.py
+├── screenshots/
+├── install.sh
+├── uninstall.sh
+├── run.py
+└── pyproject.toml
 ```
 
-## Development
+## How It Works
 
-### Regenerating Screenshots
+Since Ollama doesn't provide a public API for browsing models, this tool scrapes the [Ollama Library](https://ollama.com/library) page to fetch:
+- Model names and descriptions
+- Available parameter sizes
+- Version tags with download sizes
 
-After UI changes, regenerate the documentation screenshots:
-
-```bash
-source venv/bin/activate
-python scripts/take_screenshots.py
-```
-
-Screenshots are saved as SVG files in the `screenshots/` directory.
+Data is cached locally for 24 hours to be respectful of Ollama's servers.
 
 ## License
 
