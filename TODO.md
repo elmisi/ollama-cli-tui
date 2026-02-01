@@ -30,7 +30,17 @@ Models that are running don't appear in the Running tab list.
 - Check `ollama ps` parsing
 - Verify output format matches expected pattern
 
-### 6. Chat with models
+### 7. Show model timestamps
+Add temporal information to models (when they were downloaded/loaded).
+- Show download date in Models tab
+- Show load time in Running tab
+
+### 8. Search in description
+Extend search to also match model descriptions, not just names.
+- Filter by name OR description
+- Highlight matching text
+
+### 9. Chat with models
 Add a Chat tab to interact with loaded models directly from the TUI.
 - Text input for prompts
 - Streaming response display
