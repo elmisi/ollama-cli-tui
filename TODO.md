@@ -20,7 +20,17 @@ Ollama pull output still leaks to terminal in some cases.
 - Better handling of progress output
 - Consider using ollama API instead of CLI for pull
 
-### 4. Chat with models
+### 4. Fix pull crash
+App sometimes crashes at the end of a pull operation.
+- Debug the dismiss/callback flow
+- Add error handling around completion
+
+### 5. Fix Running tab not showing models
+Models that are running don't appear in the Running tab list.
+- Check `ollama ps` parsing
+- Verify output format matches expected pattern
+
+### 6. Chat with models
 Add a Chat tab to interact with loaded models directly from the TUI.
 - Text input for prompts
 - Streaming response display
