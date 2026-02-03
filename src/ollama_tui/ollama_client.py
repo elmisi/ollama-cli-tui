@@ -1,6 +1,7 @@
 """Async wrapper for Ollama CLI commands."""
 
 import asyncio
+import codecs
 import html
 import json
 import logging
@@ -141,11 +142,15 @@ class OllamaClient:
             stderr=asyncio.subprocess.STDOUT,
         )
         buffer = ""
+        # Use incremental decoder to handle multi-byte UTF-8 chars split across chunks
+        decoder = codecs.getincrementaldecoder('utf-8')(errors='replace')
         while True:
             chunk = await proc.stdout.read(256)
             if not chunk:
+                # Flush any remaining bytes from decoder
+                buffer += decoder.decode(b'', final=True)
                 break
-            buffer += chunk.decode()
+            buffer += decoder.decode(chunk)
             # Split by carriage return or newline
             while "\r" in buffer or "\n" in buffer:
                 # Find the earliest separator
