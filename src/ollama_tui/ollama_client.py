@@ -14,6 +14,9 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# ANSI escape sequence pattern for stripping terminal control codes
+ANSI_ESCAPE_PATTERN = re.compile(r'\x1b\[[0-9;]*[a-zA-Z]|\x1b\].*?\x07|\x1b[PX^_].*?\x1b\\')
+
 # Cache configuration
 CACHE_DIR = Path.home() / ".cache" / "ollama-tui"
 CACHE_TTL = 24 * 60 * 60  # 24 hours in seconds
@@ -157,10 +160,15 @@ class OllamaClient:
                 line = buffer[:pos].strip()
                 buffer = buffer[pos + 1:]
                 if line:
-                    yield line
+                    # Strip ANSI escape sequences from output
+                    clean_line = ANSI_ESCAPE_PATTERN.sub('', line)
+                    if clean_line:
+                        yield clean_line
         # Yield any remaining content
         if buffer.strip():
-            yield buffer.strip()
+            clean_buffer = ANSI_ESCAPE_PATTERN.sub('', buffer.strip())
+            if clean_buffer:
+                yield clean_buffer
         await proc.wait()
 
     async def delete_model(self, model_name: str) -> tuple[bool, str]:
