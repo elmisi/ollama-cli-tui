@@ -33,7 +33,7 @@ class PSView(Vertical):
 
     def on_mount(self) -> None:
         table = self.query_one("#ps-table", DataTable)
-        table.add_columns("Name", "ID", "Size", "Processor", "Context", "Until")
+        table.add_columns("Name", "ID", "Size", "Processor", "Until")
         table.cursor_type = "row"
         self.refresh_ps()
         self._refresh_timer = self.set_interval(self.refresh_interval, self.refresh_ps)
@@ -57,7 +57,6 @@ class PSView(Vertical):
                 model.id,
                 model.size,
                 model.processor,
-                model.context,
                 model.until,
             )
 

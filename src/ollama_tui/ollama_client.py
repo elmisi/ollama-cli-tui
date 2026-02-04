@@ -58,7 +58,6 @@ class RunningModel:
     id: str
     size: str
     processor: str
-    context: str
     until: str
 
 
@@ -368,10 +367,10 @@ class OllamaClient:
             return []
 
         models = []
-        # Pattern: NAME | ID | SIZE | PROCESSOR | CONTEXT | UNTIL
-        # Example: qwen2.5:7b    845dbda0ea48    4.7 GB    100% GPU    1234    4 minutes from now
+        # Pattern: NAME | ID | SIZE | PROCESSOR | UNTIL
+        # Example: qwen2.5:7b    845dbda0ea48    4.7 GB    100% GPU    4 minutes from now
         pattern = re.compile(
-            r"^(\S+)\s+(\w+)\s+(\d+\.?\d*\s*[KMGT]?B)\s+(\d+%\s*\w+)\s+(\d+)\s+(.+?)\s*$"
+            r"^(\S+)\s+(\w+)\s+(\d+\.?\d*\s*[KMGT]?B)\s+(\d+%\s*\w+)\s+(.+?)\s*$"
         )
 
         for line in lines[1:]:
@@ -383,8 +382,7 @@ class OllamaClient:
                         id=match.group(2),
                         size=match.group(3),
                         processor=match.group(4),
-                        context=match.group(5),
-                        until=match.group(6).strip(),
+                        until=match.group(5).strip(),
                     )
                 )
             else:
