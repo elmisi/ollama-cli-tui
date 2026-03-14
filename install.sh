@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Install ollama-cli-tui
 # Works both locally (./install.sh) and via curl (curl -fsSL <url> | sh)
 
@@ -18,7 +18,7 @@ fi
 echo "Installing ollama-cli-tui..."
 
 # Check Python 3.10+
-if ! command -v python3 &>/dev/null; then
+if ! command -v python3 >/dev/null 2>&1; then
     echo "Error: python3 is required but not found."
     exit 1
 fi
@@ -62,7 +62,7 @@ fi
 mkdir -p "$BIN_DIR"
 
 cat > "$BIN_DIR/ollama-tui" << EOF
-#!/bin/bash
+#!/bin/sh
 "$VENV_DIR/bin/python" "$SOURCE_DIR/run.py" "\$@"
 EOF
 
