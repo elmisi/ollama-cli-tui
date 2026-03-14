@@ -77,27 +77,29 @@ See which models are loaded in memory with auto-refresh. Stop them when done.
 ### Quick Install (Recommended)
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/elmisi/ollama-cli-tui/main/install.sh | sh
+```
+
+This clones the repo to `~/.local/share/ollama-tui/`, creates a virtual environment, and installs the `ollama-tui` command to `~/.local/bin/`. Running it again will update an existing installation.
+
+### Install from Source
+
+```bash
 git clone https://github.com/elmisi/ollama-cli-tui.git
 cd ollama-cli-tui
 ./install.sh
 ```
 
-This creates a virtual environment and installs the `ollama-tui` command to `~/.local/bin/`.
-
 ### Uninstall
 
 ```bash
-./uninstall.sh
+~/.local/share/ollama-tui/uninstall.sh
 ```
 
-### Manual Installation
+Or if installed from a local clone:
 
 ```bash
-git clone https://github.com/elmisi/ollama-cli-tui.git
-cd ollama-cli-tui
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+./uninstall.sh
 ```
 
 ## Usage
