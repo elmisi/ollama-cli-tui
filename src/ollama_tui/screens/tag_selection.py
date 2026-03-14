@@ -48,10 +48,11 @@ class TagSelectionScreen(ModalScreen[str | None]):
         ("enter", "select", "Select"),
     ]
 
-    def __init__(self, model_name: str, tags: list[ModelTag]) -> None:
+    def __init__(self, model_name: str, tags: list[ModelTag], local_models: set[str] | None = None) -> None:
         super().__init__()
         self.model_name = model_name
         self.tags = tags
+        self.local_models = local_models or set()
 
     def compose(self) -> ComposeResult:
         with Vertical():
@@ -67,6 +68,8 @@ class TagSelectionScreen(ModalScreen[str | None]):
         for tag in self.tags:
             # Show just the tag suffix (e.g., "8b" instead of "llama3.1:8b")
             tag_display = tag.tag.split(":")[-1] if ":" in tag.tag else tag.tag
+            if tag.tag in self.local_models:
+                tag_display = f"* {tag_display}"
             table.add_row(tag_display, tag.size, key=tag.tag)
 
         if table.row_count > 0:

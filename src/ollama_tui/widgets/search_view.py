@@ -116,9 +116,13 @@ class SearchView(Vertical):
             status.update(f"No versions found for {model_name}")
             return
 
+        # Fetch local models to mark already-downloaded tags
+        local_models = await client.list_models()
+        local_names = {m.name for m in local_models}
+
         status.update(f"{len(tags)} versions available")
         self.app.push_screen(
-            TagSelectionScreen(model_name, tags),
+            TagSelectionScreen(model_name, tags, local_names),
             self._on_tag_selected,
         )
 
