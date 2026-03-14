@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 # Uninstall ollama-cli-tui
+# Works both locally (./uninstall.sh) and via curl (curl -fsSL <url> | sh)
 
 set -e
 
@@ -17,11 +18,13 @@ if [ -d "$INSTALL_DIR" ]; then
     echo "Removed $INSTALL_DIR"
 fi
 
-# Remove local .venv if running from a clone
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-if [ -d "$SCRIPT_DIR/.venv" ] && [ "$SCRIPT_DIR" != "$INSTALL_DIR" ]; then
-    rm -rf "$SCRIPT_DIR/.venv"
-    echo "Removed $SCRIPT_DIR/.venv"
+# Remove local .venv if running from a clone (not piped)
+if [ -t 0 ] && [ -f "$(dirname "$0")/run.py" ] 2>/dev/null; then
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    if [ -d "$SCRIPT_DIR/.venv" ] && [ "$SCRIPT_DIR" != "$INSTALL_DIR" ]; then
+        rm -rf "$SCRIPT_DIR/.venv"
+        echo "Removed $SCRIPT_DIR/.venv"
+    fi
 fi
 
 echo "Uninstallation complete!"

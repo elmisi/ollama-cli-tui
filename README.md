@@ -93,7 +93,7 @@ cd ollama-cli-tui
 ### Uninstall
 
 ```bash
-~/.local/share/ollama-tui/uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/elmisi/ollama-cli-tui/main/uninstall.sh | sh
 ```
 
 Or if installed from a local clone:
