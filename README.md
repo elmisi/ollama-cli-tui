@@ -23,15 +23,15 @@ Browse the complete Ollama registry with real-time filtering. See model paramete
 
 ![Search Tab](screenshots/03_search.svg)
 
-### Version Selection
-When pulling a model, choose the specific version you need. See download sizes before committing.
-
-![Tag Selection](screenshots/05_tag_selection.svg)
-
 ### Filter Models
 Type to instantly filter the model list. Find what you need in seconds.
 
 ![Search Filter](screenshots/04_search_filter.svg)
+
+### Version Selection
+When pulling a model, choose the specific version you need. See download sizes before committing.
+
+![Tag Selection](screenshots/05_tag_selection.svg)
 
 ### Manage Local Models
 List, inspect, and delete your downloaded models.
