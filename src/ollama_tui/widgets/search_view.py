@@ -40,7 +40,7 @@ class SearchView(Vertical):
 
     def on_mount(self) -> None:
         table = self.query_one("#search-table", DataTable)
-        table.add_columns("Name", "Parameters", "Description")
+        table.add_columns("Name", "Parameters", "Updated", "Description")
         table.cursor_type = "row"
         self.load_models()
 
@@ -70,7 +70,7 @@ class SearchView(Vertical):
             if filter_lower in model.name.lower():
                 # Truncate description to fit
                 desc = model.description[:60] + "..." if len(model.description) > 60 else model.description
-                table.add_row(model.name, model.sizes, desc)
+                table.add_row(model.name, model.sizes, model.updated, desc)
                 count += 1
 
         # Move cursor to first row after loading

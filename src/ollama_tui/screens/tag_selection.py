@@ -17,7 +17,7 @@ class TagSelectionScreen(ModalScreen[str | None]):
     }
 
     TagSelectionScreen > Vertical {
-        width: 70;
+        width: 85;
         height: auto;
         max-height: 80%;
         background: $surface;
@@ -62,7 +62,7 @@ class TagSelectionScreen(ModalScreen[str | None]):
 
     def on_mount(self) -> None:
         table = self.query_one("#tag-table", DataTable)
-        table.add_columns("Tag", "Size")
+        table.add_columns("Tag", "Size", "Updated")
         table.cursor_type = "row"
 
         for tag in self.tags:
@@ -70,7 +70,7 @@ class TagSelectionScreen(ModalScreen[str | None]):
             tag_display = tag.tag.split(":")[-1] if ":" in tag.tag else tag.tag
             if tag.tag in self.local_models:
                 tag_display = f"* {tag_display}"
-            table.add_row(tag_display, tag.size, key=tag.tag)
+            table.add_row(tag_display, tag.size, tag.updated, key=tag.tag)
 
         if table.row_count > 0:
             table.move_cursor(row=0)

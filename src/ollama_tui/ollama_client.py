@@ -30,6 +30,7 @@ class RemoteModel:
     name: str
     sizes: str  # Parameter sizes like "7b, 13b, 70b"
     description: str  # Short description of the model
+    updated: str = ""  # e.g. "2 months ago"
 
 
 @dataclass
@@ -38,6 +39,7 @@ class ModelTag:
 
     tag: str  # Full tag like "llama3.1:8b"
     size: str  # Download size like "4.9GB"
+    updated: str = ""  # e.g. "3 weeks ago"
 
 
 @dataclass
@@ -261,7 +263,11 @@ class OllamaClient:
                 desc_match = re.search(r'text-neutral-800 text-md">([^<]+)</p>', block)
                 description = html.unescape(desc_match.group(1).strip()) if desc_match else ""
 
-                models.append(RemoteModel(name=name, sizes=sizes_str, description=description))
+                # Extract updated date
+                updated_match = re.search(r'x-test-updated[^>]*>([^<]+)</span>', block)
+                updated = updated_match.group(1).strip() if updated_match else ""
+
+                models.append(RemoteModel(name=name, sizes=sizes_str, description=description, updated=updated))
 
             logger.info(f"Fetched {len(models)} remote models from library")
 
@@ -311,7 +317,11 @@ class OllamaClient:
                 size_match = re.search(r'col-span-2 text-neutral-500 text-\[13px\]">([^<]+)</p>', block)
                 size = size_match.group(1).strip() if size_match else "-"
 
-                tags.append(ModelTag(tag=tag, size=size))
+                # Extract updated date
+                updated_match = re.search(r'x-test-updated[^>]*>([^<]+)</span>', block)
+                updated = updated_match.group(1).strip() if updated_match else ""
+
+                tags.append(ModelTag(tag=tag, size=size, updated=updated))
 
             logger.info(f"Fetched {len(tags)} tags for {model_name}")
 
