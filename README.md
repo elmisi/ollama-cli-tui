@@ -159,31 +159,6 @@ Registry data is cached in `~/.cache/ollama-tui/` for 24 hours to reduce network
 | `Escape` | Back to list / Cancel |
 | `r` | Refresh from registry |
 
-## Project Structure
-
-```
-ollama-cli-tui/
-├── src/ollama_tui/
-│   ├── app.py              # Main application
-│   ├── ollama_client.py    # Ollama CLI wrapper + registry scraping
-│   ├── screens/
-│   │   ├── confirm_dialog.py
-│   │   ├── model_info.py
-│   │   ├── pull_progress.py
-│   │   └── tag_selection.py  # Version selection dialog
-│   ├── widgets/
-│   │   ├── models_view.py
-│   │   ├── ps_view.py
-│   │   └── search_view.py
-│   └── styles/app.tcss
-├── scripts/take_screenshots.py
-├── screenshots/
-├── install.sh
-├── uninstall.sh
-├── run.py
-└── pyproject.toml
-```
-
 ## How It Works
 
 Since Ollama doesn't provide a public API for browsing models, this tool scrapes the [Ollama Library](https://ollama.com/library) page to fetch:
