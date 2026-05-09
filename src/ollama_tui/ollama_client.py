@@ -9,7 +9,7 @@ import re
 import shutil
 import time
 import urllib.request
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from pathlib import Path
 
@@ -31,6 +31,10 @@ class RemoteModel:
     sizes: str  # Parameter sizes like "7b, 13b, 70b"
     description: str  # Short description of the model
     updated: str = ""  # e.g. "2 months ago"
+    updated_date: str = ""  # ISO format: "2024-11-30"
+    is_cloud: bool = False
+    capabilities: list[str] = field(default_factory=list)
+    pulls: str = ""
 
 
 @dataclass
@@ -62,6 +66,29 @@ class RunningModel:
     processor: str
     context: str
     until: str
+
+
+def parse_param_sizes(sizes_str: str) -> list[float]:
+    """Parse parameter sizes string into list of per-expert values in billions."""
+    if not sizes_str or sizes_str == "-":
+        return []
+    result = []
+    for token in sizes_str.split(", "):
+        token = token.strip().lower()
+        moe = re.match(r'(\d+)x(\d+\.?\d*)b', token)
+        if moe:
+            result.append(float(moe.group(2)))
+            continue
+        billions = re.match(r'(\d+\.?\d*)b$', token)
+        if billions:
+            result.append(float(billions.group(1)))
+            continue
+        millions = re.match(r'(\d+\.?\d*)m$', token)
+        if millions:
+            result.append(float(millions.group(1)) / 1000)
+            continue
+        logger.warning(f"Unparseable param size: {token}")
+    return sorted(result)
 
 
 def flush_cache() -> None:
@@ -263,11 +290,35 @@ class OllamaClient:
                 desc_match = re.search(r'text-neutral-800 text-md">([^<]+)</p>', block)
                 description = html.unescape(desc_match.group(1).strip()) if desc_match else ""
 
-                # Extract updated date
+                # Extract updated date (relative text)
                 updated_match = re.search(r'x-test-updated[^>]*>([^<]+)</span>', block)
                 updated = updated_match.group(1).strip() if updated_match else ""
 
-                models.append(RemoteModel(name=name, sizes=sizes_str, description=description, updated=updated))
+                # Extract exact date from title attribute
+                date_match = re.search(r'title="([A-Z][a-z]+ \d+, \d{4})[^"]*"', block)
+                updated_date = ""
+                if date_match:
+                    try:
+                        dt = datetime.strptime(date_match.group(1), "%b %d, %Y")
+                        updated_date = dt.strftime("%Y-%m-%d")
+                    except ValueError:
+                        pass
+
+                # Cloud badge
+                is_cloud = bool(re.search(r'text-cyan-500[^>]*>cloud</span>', block))
+
+                # Capabilities
+                capabilities = re.findall(r'x-test-capability[^>]*>([^<]+)</span>', block)
+
+                # Pull count
+                pulls_match = re.search(r'x-test-pull-count[^>]*>([^<]+)</span>', block)
+                pulls = pulls_match.group(1).strip() if pulls_match else ""
+
+                models.append(RemoteModel(
+                    name=name, sizes=sizes_str, description=description,
+                    updated=updated, updated_date=updated_date,
+                    is_cloud=is_cloud, capabilities=capabilities, pulls=pulls,
+                ))
 
             logger.info(f"Fetched {len(models)} remote models from library")
 

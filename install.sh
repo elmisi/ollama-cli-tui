@@ -1,18 +1,15 @@
 #!/bin/sh
-# Install ollama-cli-tui
-# Works both locally (./install.sh) and via curl (curl -fsSL <url> | sh)
+# Install ollama-cli-tui from a local clone
 
 set -e
 
-REPO_URL="https://github.com/elmisi/ollama-cli-tui.git"
-INSTALL_DIR="$HOME/.local/share/ollama-tui"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BIN_DIR="$HOME/.local/bin"
 
-# Detect if running from a local clone or piped via curl
-if [ -f "$(dirname "$0")/run.py" ] 2>/dev/null && [ -t 0 ]; then
-    SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
-else
-    SOURCE_DIR=""
+# Verify we're in the repo
+if [ ! -f "$SCRIPT_DIR/run.py" ]; then
+    echo "Error: run this script from inside the ollama-cli-tui repo."
+    exit 1
 fi
 
 echo "Installing ollama-cli-tui..."
@@ -32,23 +29,8 @@ if [ "$PYTHON_MAJOR" -lt 3 ] || { [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR"
     exit 1
 fi
 
-if [ -z "$SOURCE_DIR" ]; then
-    # Remote install: clone or update repo
-    if [ -d "$INSTALL_DIR/.git" ]; then
-        echo "Updating existing installation..."
-        git -C "$INSTALL_DIR" fetch --quiet
-        git -C "$INSTALL_DIR" reset --hard origin/main --quiet
-    else
-        # Clean up non-git remnants if any
-        rm -rf "$INSTALL_DIR"
-        echo "Cloning repository..."
-        git clone --quiet "$REPO_URL" "$INSTALL_DIR"
-    fi
-    SOURCE_DIR="$INSTALL_DIR"
-fi
-
 # Create/update virtual environment
-VENV_DIR="$SOURCE_DIR/.venv"
+VENV_DIR="$SCRIPT_DIR/.venv"
 if [ -d "$VENV_DIR" ]; then
     echo "Updating virtual environment..."
 else
@@ -56,19 +38,19 @@ else
     python3 -m venv "$VENV_DIR"
 fi
 
-"$VENV_DIR/bin/pip" install -r "$SOURCE_DIR/requirements.txt" --quiet --upgrade
+"$VENV_DIR/bin/pip" install -r "$SCRIPT_DIR/requirements.txt" --quiet --upgrade
 
 # Create bin directory and wrapper script
 mkdir -p "$BIN_DIR"
 
 cat > "$BIN_DIR/ollama-tui" << EOF
 #!/bin/sh
-"$VENV_DIR/bin/python" "$SOURCE_DIR/run.py" "\$@"
+"$VENV_DIR/bin/python" "$SCRIPT_DIR/run.py" "\$@"
 EOF
 
 chmod +x "$BIN_DIR/ollama-tui"
 
-VERSION=$("$VENV_DIR/bin/python" -c "import sys; sys.path.insert(0, '$SOURCE_DIR/src'); from ollama_tui import __version__; print(__version__)" 2>/dev/null || echo "unknown")
+VERSION=$("$VENV_DIR/bin/python" -c "import sys; sys.path.insert(0, '$SCRIPT_DIR/src'); from ollama_tui import __version__; print(__version__)" 2>/dev/null || echo "unknown")
 
 echo ""
 echo "ollama-tui v${VERSION} installed successfully!"

@@ -51,6 +51,17 @@ DataTable > .datatable--cursor {
     margin-bottom: 1;
 }
 
+/* Filter bar */
+#filter-bar {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#filter-bar Select {
+    width: 1fr;
+    margin-right: 1;
+}
+
 /* Views */
 ModelsView, PSView, SearchView {
     height: 100%;

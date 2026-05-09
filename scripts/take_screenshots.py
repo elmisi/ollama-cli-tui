@@ -29,22 +29,22 @@ SCREENSHOTS_DIR = Path(__file__).parent.parent / "screenshots"
 
 # Demo data for search results with parameters and descriptions
 DEMO_REMOTE_MODELS = [
-    RemoteModel("codellama", "7b, 13b, 34b, 70b", "Code-specialized Llama model for programming tasks", "3 months ago"),
-    RemoteModel("deepseek-coder", "1.3b, 6.7b, 33b", "Code generation model trained on 2T tokens", "8 months ago"),
-    RemoteModel("deepseek-r1", "1.5b, 7b, 8b, 14b, 32b, 70b, 671b", "DeepSeek's reasoning model with reinforcement learning", "2 weeks ago"),
-    RemoteModel("gemma", "2b, 7b", "Lightweight open models from Google DeepMind", "6 months ago"),
-    RemoteModel("gemma2", "2b, 9b, 27b", "Google's next generation Gemma models", "4 months ago"),
-    RemoteModel("llama2", "7b, 13b, 70b", "Meta's open foundation and chat models", "1 year ago"),
-    RemoteModel("llama3", "8b, 70b", "Meta's most capable openly available LLM", "10 months ago"),
-    RemoteModel("llama3.1", "8b, 70b, 405b", "Llama 3.1 with extended context and capabilities", "8 months ago"),
-    RemoteModel("llama3.2", "1b, 3b", "Lightweight Llama models for edge devices", "5 months ago"),
-    RemoteModel("llama3.3", "70b", "Latest Llama 3.3 with improved reasoning", "3 months ago"),
-    RemoteModel("mistral", "7b", "Fast and efficient 7B model from Mistral AI", "6 months ago"),
-    RemoteModel("mixtral", "8x7b, 8x22b", "Mixture of Experts model from Mistral AI", "9 months ago"),
-    RemoteModel("phi3", "3.8b, 14b", "Microsoft's compact yet capable language models", "7 months ago"),
-    RemoteModel("qwen", "0.5b, 1.8b, 4b, 7b, 14b, 72b", "Alibaba's multilingual foundation models", "1 year ago"),
-    RemoteModel("qwen2", "0.5b, 1.5b, 7b, 72b", "Second generation Qwen with improved performance", "5 months ago"),
-    RemoteModel("qwen2.5", "0.5b, 1.5b, 3b, 7b, 14b, 32b, 72b", "Latest Qwen with enhanced capabilities", "1 month ago"),
+    RemoteModel("codellama", "7b, 13b, 34b, 70b", "Code-specialized Llama model for programming tasks", "3 months ago", "2026-02-09", False, ["tools"], "45.3M"),
+    RemoteModel("deepseek-coder", "1.3b, 6.7b, 33b", "Code generation model trained on 2T tokens", "8 months ago", "2025-09-09", False, ["tools"], "28.1M"),
+    RemoteModel("deepseek-r1", "1.5b, 7b, 8b, 14b, 32b, 70b, 671b", "DeepSeek's reasoning model with reinforcement learning", "2 weeks ago", "2026-04-25", False, ["tools", "thinking"], "89.2M"),
+    RemoteModel("gemma", "2b, 7b", "Lightweight open models from Google DeepMind", "6 months ago", "2025-11-09", False, [], "31.5M"),
+    RemoteModel("gemma2", "2b, 9b, 27b", "Google's next generation Gemma models", "4 months ago", "2026-01-09", False, ["tools"], "42.7M"),
+    RemoteModel("llama2", "7b, 13b, 70b", "Meta's open foundation and chat models", "1 year ago", "2025-05-09", False, [], "55.0M"),
+    RemoteModel("llama3", "8b, 70b", "Meta's most capable openly available LLM", "10 months ago", "2025-07-09", False, ["tools"], "67.8M"),
+    RemoteModel("llama3.1", "8b, 70b, 405b", "Llama 3.1 with extended context and capabilities", "8 months ago", "2025-09-09", False, ["tools"], "78.4M"),
+    RemoteModel("llama3.2", "1b, 3b", "Lightweight Llama models for edge devices", "5 months ago", "2025-12-09", False, ["tools", "vision"], "35.2M"),
+    RemoteModel("llama3.3", "70b", "Latest Llama 3.3 with improved reasoning", "3 months ago", "2026-02-09", False, ["tools", "thinking"], "22.1M"),
+    RemoteModel("mistral", "7b", "Fast and efficient 7B model from Mistral AI", "6 months ago", "2025-11-09", False, ["tools"], "51.3M"),
+    RemoteModel("mixtral", "8x7b, 8x22b", "Mixture of Experts model from Mistral AI", "9 months ago", "2025-08-09", False, ["tools"], "38.9M"),
+    RemoteModel("phi3", "3.8b, 14b", "Microsoft's compact yet capable language models", "7 months ago", "2025-10-09", False, [], "29.4M"),
+    RemoteModel("qwen", "0.5b, 1.8b, 4b, 7b, 14b, 72b", "Alibaba's multilingual foundation models", "1 year ago", "2025-05-09", False, [], "44.6M"),
+    RemoteModel("qwen2", "0.5b, 1.5b, 7b, 72b", "Second generation Qwen with improved performance", "5 months ago", "2025-12-09", False, ["tools"], "53.8M"),
+    RemoteModel("qwen2.5", "0.5b, 1.5b, 3b, 7b, 14b, 32b, 72b", "Latest Qwen with enhanced capabilities", "1 month ago", "2026-04-09", False, ["tools", "thinking"], "114.1M"),
 ]
 
 # Demo tags for llama3.1 tag selection screenshot

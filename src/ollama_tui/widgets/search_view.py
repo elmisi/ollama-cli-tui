@@ -2,17 +2,39 @@
 
 import logging
 
+from datetime import datetime, timedelta
+
 from textual.app import ComposeResult
-from textual.containers import Vertical
-from textual.widgets import DataTable, Input, Static
+from textual.containers import Vertical, Horizontal
+from textual.widgets import DataTable, Input, Static, Select
 from textual.binding import Binding
 from textual import work
 from textual.message import Message
 
-from ..ollama_client import OllamaClient, RemoteModel
+from ..ollama_client import OllamaClient, RemoteModel, parse_param_sizes
 from ..screens import ConfirmDialog, PullProgressScreen, TagSelectionScreen
 
 logger = logging.getLogger(__name__)
+
+PERIOD_OPTIONS = [
+    ("All time", "all"),
+    ("Last week", "week"),
+    ("Last month", "month"),
+    ("Last year", "year"),
+]
+
+PARAMS_OPTIONS = [
+    ("Any size", "all"),
+    ("< 1B", "1"),
+    ("< 7B", "7"),
+    ("< 14B", "14"),
+    ("< 70B", "70"),
+]
+
+CLOUD_OPTIONS = [
+    ("All models", "all"),
+    ("Hide cloud-only", "hide"),
+]
 
 
 class SearchView(Vertical):
@@ -35,6 +57,10 @@ class SearchView(Vertical):
 
     def compose(self) -> ComposeResult:
         yield Input(placeholder="Type to filter models... [/]", id="search-input")
+        with Horizontal(id="filter-bar"):
+            yield Select(PERIOD_OPTIONS, value="all", id="filter-period", prompt="Period")
+            yield Select(PARAMS_OPTIONS, value="all", id="filter-params", prompt="Params")
+            yield Select(CLOUD_OPTIONS, value="all", id="filter-cloud", prompt="Cloud")
         yield DataTable(id="search-table")
         yield Static("", id="search-status")
 
@@ -63,21 +89,62 @@ class SearchView(Vertical):
         table = self.query_one("#search-table", DataTable)
         status = self.query_one("#search-status", Static)
 
+        period = self.query_one("#filter-period", Select).value
+        params_max = self.query_one("#filter-params", Select).value
+        cloud_filter = self.query_one("#filter-cloud", Select).value
+
         table.clear()
         filter_lower = filter_text.lower()
         count = 0
-        for model in self._all_models:
-            if filter_lower in model.name.lower():
-                # Truncate description to fit
-                desc = model.description[:60] + "..." if len(model.description) > 60 else model.description
-                table.add_row(model.name, model.sizes, model.updated, desc)
-                count += 1
+        any_filter_active = filter_text or period != "all" or params_max != "all" or cloud_filter != "all"
 
-        # Move cursor to first row after loading
+        for model in self._all_models:
+            if filter_lower and filter_lower not in model.name.lower():
+                continue
+
+            param_sizes = parse_param_sizes(model.sizes)
+
+            if cloud_filter == "hide" and model.is_cloud and not param_sizes:
+                continue
+
+            if period != "all" and model.updated_date:
+                if not self._passes_period_filter(model.updated_date, period):
+                    continue
+
+            if params_max != "all" and param_sizes:
+                max_val = float(params_max)
+                if not any(s < max_val for s in param_sizes):
+                    continue
+
+            desc = model.description[:60] + "..." if len(model.description) > 60 else model.description
+            table.add_row(model.name, model.sizes, model.updated, desc)
+            count += 1
+
         if table.row_count > 0:
             table.move_cursor(row=0)
 
-        status.update(f"{count} models" + (f" (filtered)" if filter_text else ""))
+        status.update(f"{count} models" + (" (filtered)" if any_filter_active else ""))
+
+    @staticmethod
+    def _passes_period_filter(updated_date: str, period: str) -> bool:
+        try:
+            model_date = datetime.fromisoformat(updated_date)
+        except ValueError:
+            return True
+        now = datetime.now()
+        cutoffs = {
+            "week": timedelta(days=7),
+            "month": timedelta(days=30),
+            "year": timedelta(days=365),
+        }
+        cutoff = cutoffs.get(period)
+        if cutoff is None:
+            return True
+        return (now - model_date) <= cutoff
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        search_text = self.query_one("#search-input", Input).value
+        self._update_table(search_text)
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "search-input":

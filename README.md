@@ -74,13 +74,13 @@ See which models are loaded in memory with auto-refresh. Stop them when done.
 
 ## Installation
 
-### Quick Install (Recommended)
+### Install with pipx (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/elmisi/ollama-cli-tui/main/install.sh | sh
+pipx install git+https://github.com/elmisi/ollama-cli-tui.git
 ```
 
-This clones the repo to `~/.local/share/ollama-tui/`, creates a virtual environment, and installs the `ollama-tui` command to `~/.local/bin/`. Running it again will update an existing installation.
+Requires [pipx](https://pipx.pypa.io/). Running again will upgrade to the latest version.
 
 ### Install from Source
 
@@ -92,11 +92,13 @@ cd ollama-cli-tui
 
 ### Uninstall
 
+If installed with pipx:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/elmisi/ollama-cli-tui/main/uninstall.sh | sh
+pipx uninstall ollama-cli-tui
 ```
 
-Or if installed from a local clone:
+If installed from source:
 
 ```bash
 ./uninstall.sh
